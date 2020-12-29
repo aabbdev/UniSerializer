@@ -12,7 +12,7 @@
 ## &#x1F4BE; Install
 
 Download the latest version of UniSerializer from
-the [GitHub releases](releases) page.
+the [GitHub releases](https://github.com/Diffylab/UniSerializer/releases) page.
 
 
 ## &#x1F4AC; How to Contribute

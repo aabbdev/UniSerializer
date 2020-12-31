@@ -14,7 +14,15 @@
 Download the latest version of UniSerializer from
 the [GitHub releases](https://github.com/Diffylab/UniSerializer/releases) page.
 
-
+# Python 3.x version
+```
+pip install uniserializer
+```
+or
+```
+cd python/
+python setup.py install
+```
 ## &#x1F4AC; How to Contribute
 
 ### Get the code
@@ -27,4 +35,4 @@ $ cd UniSerializer-master
 
 ## &#x00A9;&#xFE0F; License
 
-GNU v3.0. Copyright (c) [Aabbdev](https://github.com/aabbdev).
+MIT. Copyright (c) [Aabbdev](https://github.com/aabbdev).

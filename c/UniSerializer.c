@@ -78,10 +78,10 @@ bool Uni_encode_16(UniBuffer* ctx, uint16_t value) {
 	}
 	if (is_big_endian()) {
 		*(ctx->buffer + ctx->position) = value & 0xff;
-		*(ctx->buffer + ctx->position + 1) = value >> 8;
+		*(ctx->buffer + ctx->position + 1) = (value >> 8) & 0xff;
 	}else {
 		*(ctx->buffer + ctx->position + 1) = value & 0xff;
-		*(ctx->buffer + ctx->position) = value >> 8;
+		*(ctx->buffer + ctx->position) = (value >> 8) & 0xff;
 	}
 
 	ctx->position += 2;
@@ -97,12 +97,12 @@ bool Uni_encode_32(UniBuffer* ctx, uint32_t value) {
 		*(ctx->buffer + ctx->position) = value & 0xff;
 		*(ctx->buffer + ctx->position + 1) = (value >> 8) & 0xFF;
 		*(ctx->buffer + ctx->position + 2) = (value >> 16) & 0xFF;
-		*(ctx->buffer + ctx->position + 3) = value >> 24;
+		*(ctx->buffer + ctx->position + 3) = (value >> 24) & 0xff;
 	}else{
 		*(ctx->buffer + ctx->position + 3) = value & 0xff;
 		*(ctx->buffer + ctx->position + 2) = (value >> 8) & 0xFF;
 		*(ctx->buffer + ctx->position + 1) = (value >> 16) & 0xFF;
-		*(ctx->buffer + ctx->position) = value >> 24;
+		*(ctx->buffer + ctx->position) = (value >> 24) & 0xff;
 	}
 	ctx->position += 4;
 
@@ -120,7 +120,7 @@ bool Uni_encode_64(UniBuffer* ctx, uint64_t value) {
 		*(ctx->buffer + ctx->position + 4) = (value >> 32) & 0xFF;
 		*(ctx->buffer + ctx->position + 5) = (value >> 40) & 0xFF;
 		*(ctx->buffer + ctx->position + 6) = (value >> 48) & 0xFF;
-		*(ctx->buffer + ctx->position + 7) = value >> 56;
+		*(ctx->buffer + ctx->position + 7) = (value >> 56) & 0xff;
 	}
 	else {
 		*(ctx->buffer + ctx->position + 7) = value & 0xff;
@@ -130,7 +130,7 @@ bool Uni_encode_64(UniBuffer* ctx, uint64_t value) {
 		*(ctx->buffer + ctx->position + 3) = (value >> 32) & 0xFF;
 		*(ctx->buffer + ctx->position + 2) = (value >> 40) & 0xFF;
 		*(ctx->buffer + ctx->position + 1) = (value >> 48) & 0xFF;
-		*(ctx->buffer + ctx->position) = value >> 56;
+		*(ctx->buffer + ctx->position) = (value >> 56) & 0xff;
 	}
 
 	ctx->position += 8;
@@ -194,7 +194,7 @@ uint8_t Uni_decode_8(UniBuffer* ctx, bool* error)
 		return NULL;
 	}
 
-	uint8_t value = *(ctx->buffer + ctx->position);
+	uint8_t value = *(ctx->buffer + ctx->position) & 0xff;
 	ctx->position += 1;
 	return value;
 }
@@ -207,12 +207,12 @@ uint16_t Uni_decode_16(UniBuffer* ctx, bool* error)
 
 	uint16_t value;
 	if (is_big_endian()) {
-		value = *(ctx->buffer + ctx->position);
-		value |= ((uint16_t)(*(ctx->buffer + ctx->position + 1))) << 8;
+		value = *(ctx->buffer + ctx->position) & 0xff;
+		value |= (((uint16_t)(*(ctx->buffer + ctx->position + 1))) << 8) & 0xff;
 	}
 	else {
-		value = *(ctx->buffer + ctx->position + 1);
-		value |= ((uint16_t)(*(ctx->buffer + ctx->position))) << 8;
+		value = *(ctx->buffer + ctx->position + 1) & 0xff;
+		value |= (((uint16_t)(*(ctx->buffer + ctx->position))) << 8) & 0xff;
 	}
 	ctx->position += 2;
 	return value;
@@ -226,16 +226,16 @@ uint32_t Uni_decode_32(UniBuffer* ctx, bool* error)
 
 	uint32_t value;
 	if (is_big_endian()) {
-		value = *(ctx->buffer + ctx->position);
-		value |= ((uint32_t)(*(ctx->buffer + ctx->position + 1))) << 8;
-		value |= ((uint32_t)(*(ctx->buffer + ctx->position + 2))) << 16;
-		value |= ((uint32_t)(*(ctx->buffer + ctx->position + 3))) << 24;
+		value = *(ctx->buffer + ctx->position) & 0xff;
+		value |= (((uint32_t)(*(ctx->buffer + ctx->position + 1))) << 8) & 0xff;
+		value |= (((uint32_t)(*(ctx->buffer + ctx->position + 2))) << 16) & 0xff;
+		value |= (((uint32_t)(*(ctx->buffer + ctx->position + 3))) << 24) & 0xff;
 	}
 	else {
-		value = *(ctx->buffer + ctx->position + 3);
-		value |= ((uint32_t)(*(ctx->buffer + ctx->position + 2))) << 8;
-		value |= ((uint32_t)(*(ctx->buffer + ctx->position + 1))) << 16;
-		value |= ((uint32_t)(*(ctx->buffer + ctx->position))) << 24;
+		value = *(ctx->buffer + ctx->position + 3) & 0xff;
+		value |= (((uint32_t)(*(ctx->buffer + ctx->position + 2))) << 8) & 0xff;
+		value |= (((uint32_t)(*(ctx->buffer + ctx->position + 1))) << 16) & 0xff;
+		value |= (((uint32_t)(*(ctx->buffer + ctx->position))) << 24) & 0xff;
 	}
 	ctx->position += 4;
 	return value;
@@ -249,24 +249,24 @@ uint64_t Uni_decode_64(UniBuffer* ctx, bool* error)
 
 	uint64_t value;
 	if (is_big_endian()) {
-		value = *(ctx->buffer + ctx->position);
-		value |= ((uint64_t)(*(ctx->buffer + ctx->position + 1))) << 8;
-		value |= ((uint64_t)(*(ctx->buffer + ctx->position + 2))) << 16;
-		value |= ((uint64_t)(*(ctx->buffer + ctx->position + 3))) << 24;
-		value |= ((uint64_t)(*(ctx->buffer + ctx->position + 4))) << 32;
-		value |= ((uint64_t)(*(ctx->buffer + ctx->position + 5))) << 40;
-		value |= ((uint64_t)(*(ctx->buffer + ctx->position + 6))) << 48;
-		value |= ((uint64_t)(*(ctx->buffer + ctx->position + 7))) << 56;
+		value = *(ctx->buffer + ctx->position) & 0xff;
+		value |= (((uint64_t)(*(ctx->buffer + ctx->position + 1))) << 8) & 0xff;
+		value |= (((uint64_t)(*(ctx->buffer + ctx->position + 2))) << 16) & 0xff;
+		value |= (((uint64_t)(*(ctx->buffer + ctx->position + 3))) << 24) & 0xff;
+		value |= (((uint64_t)(*(ctx->buffer + ctx->position + 4))) << 32) & 0xff;
+		value |= (((uint64_t)(*(ctx->buffer + ctx->position + 5))) << 40) & 0xff;
+		value |= (((uint64_t)(*(ctx->buffer + ctx->position + 6))) << 48) & 0xff;
+		value |= (((uint64_t)(*(ctx->buffer + ctx->position + 7))) << 56) & 0xff;
 	}
 	else {
-		value = *(ctx->buffer + ctx->position + 7);
-		value |= ((uint64_t)(*(ctx->buffer + ctx->position + 6))) << 8;
-		value |= ((uint64_t)(*(ctx->buffer + ctx->position + 5))) << 16;
-		value |= ((uint64_t)(*(ctx->buffer + ctx->position + 4))) << 24;
-		value |= ((uint64_t)(*(ctx->buffer + ctx->position + 3))) << 32;
-		value |= ((uint64_t)(*(ctx->buffer + ctx->position + 2))) << 40;
-		value |= ((uint64_t)(*(ctx->buffer + ctx->position + 1))) << 48;
-		value |= ((uint64_t)(*(ctx->buffer + ctx->position))) << 56;
+		value = *(ctx->buffer + ctx->position + 7) & 0xff;
+		value |= (((uint64_t)(*(ctx->buffer + ctx->position + 6))) << 8) & 0xff;
+		value |= (((uint64_t)(*(ctx->buffer + ctx->position + 5))) << 16) & 0xff;
+		value |= (((uint64_t)(*(ctx->buffer + ctx->position + 4))) << 24) & 0xff;
+		value |= (((uint64_t)(*(ctx->buffer + ctx->position + 3))) << 32) & 0xff;
+		value |= (((uint64_t)(*(ctx->buffer + ctx->position + 2))) << 40) & 0xff;
+		value |= (((uint64_t)(*(ctx->buffer + ctx->position + 1))) << 48) & 0xff;
+		value |= (((uint64_t)(*(ctx->buffer + ctx->position))) << 56) & 0xff;
 	}
 
 	ctx->position += 8;

@@ -35,4 +35,4 @@ $ cd UniSerializer-master
 
 ## &#x00A9;&#xFE0F; License
 
-MIT. Copyright (c) [Aabbdev](https://github.com/aabbdev).
+MIT. Copyright (c) [Diffy Ltd](https://github.com/diffylab).

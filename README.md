@@ -14,7 +14,7 @@
 Download the latest version of UniSerializer from
 the [GitHub releases](https://github.com/Diffylab/UniSerializer/releases) page.
 
-# Python 3.x version
+### Python 3.x version
 ```
 pip install uniserializer
 ```

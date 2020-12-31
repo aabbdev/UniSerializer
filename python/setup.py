@@ -1,7 +1,7 @@
 from setuptools import setup
 with open("../README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
-setup(name='UniSerializer',
+setup(name='uniserializer',
     version='1.0',
     description='Fast and efficient universal data serializer',
     url='https://github.com/Diffylab/UniSerializer',

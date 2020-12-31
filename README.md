@@ -7,7 +7,7 @@
     <br/>
 </h1>
 
-<h4 align="center">🔣🚀 Fast and efficient - It's a universal and portable serializer, without schematics ! 🤗</h4>
+<h4 align="center">🔣🚀 Fast and efficient - It's a universal serializer, without schematics ! 🤗</h4>
 
 ## &#x1F4BE; Install
 

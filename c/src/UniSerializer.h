@@ -4,6 +4,10 @@
 #include <string.h> //memset
 #include <stdint.h>
 #include <stdbool.h>
+#ifdef __cplusplus 
+extern "C" {
+#endif
+
 typedef struct _UniBuffer {
 	uint8_t* buffer;
 	uint32_t position;
@@ -65,4 +69,7 @@ char* Uni_decode_String(UniBuffer* ctx, /*char* output,*/ bool* error);
 
 void Uni_reset(UniBuffer* ctx);
 void Uni_free(UniBuffer* ctx);
+#ifdef __cplusplus 
+}
+#endif 
 #endif /*__TRIM__*/

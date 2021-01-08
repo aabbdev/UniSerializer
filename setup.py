@@ -8,7 +8,7 @@ setup(name='uniserializer',
     download_url = 'https://github.com/Diffylab/UniSerializer/releases/',
     keywords = ['Serializer', 'Deserializer', 'data', 'binary', 'encoding'],
     license='MIT',
-    packages=['src'],
+    packages=['python'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

@@ -1,9 +1,7 @@
 import sys, ctypes
 class UniSerializer:
     def __init__(self, buffer):
-        assert(type(buffer) == bytearray or type(buffer) == list)
-        self.buffer = list(buffer)
-        self.position = 0
+        self.frombuffer(buffer)
     def __VerifyEntrySize(self, size):
         assert(type(size) == int)
         return (self.position + size) > len(self.buffer)
@@ -240,7 +238,7 @@ class UniSerializer:
             return None
         return ctypes.c_bool(val).value
     def frombuffer(self, buffer):
-        assert(type(buffer) == bytearray or type(buffer) == list)
+        assert(type(buffer) == bytearray or type(buffer) == list or type(buffer) == bytes)
         self.buffer = list(buffer)
         self.reset()
     def reset(self):

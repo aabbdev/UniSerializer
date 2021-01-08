@@ -7,6 +7,8 @@ class UniSerializer:
         return (self.position + size) > len(self.buffer)
     def encode_8(self, value):
         assert(type(value) == int)
+        assert(value < 0x100)
+
         val = value & 0xff
         if self.__VerifyEntrySize(1):
             self.buffer.append(val)
@@ -15,6 +17,8 @@ class UniSerializer:
         self.position += 1
     def encode_16(self, value):
         assert(type(value) == int)
+        assert(value < 0x10000)
+
         val = [0,0]
         if sys.byteorder == "big":
             val[0] = value & 0xff
@@ -31,6 +35,8 @@ class UniSerializer:
         self.position += 2
     def encode_32(self, value):
         assert(type(value) == int)
+        assert(value < 0x100000000)
+
         val = [0,0,0,0]
         if sys.byteorder == "big":
             val[0] = value & 0xff
@@ -55,6 +61,8 @@ class UniSerializer:
         self.position += 4
     def encode_64(self, value):
         assert(type(value) == int)
+        assert(value < 0x10000000000000000)
+
         val = [0,0,0,0,0,0,0,0]
         if sys.byteorder == "big":
             val[0] = value & 0xff
@@ -107,7 +115,7 @@ class UniSerializer:
             self.buffer[length + 1] = 0
         self.position += length + 1
     def encode_Bytes(self, value):
-        assert(type(value) == bytearray or type(value) == list)
+        assert(type(value) == bytearray or type(value) == list or type(value) == bytes)
         val = list(value)
         length = len(val)
         if self.__VerifyEntrySize(length):

@@ -1,6 +1,6 @@
 from setuptools import setup
 setup(name='uniserializer',
-    version='1.15',
+    version='1.20',
     description='Fast and efficient universal data serializer',
     url='https://github.com/Diffylab/UniSerializer',
     author='Diffy',

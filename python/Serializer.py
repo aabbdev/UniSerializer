@@ -1,6 +1,6 @@
 import sys, ctypes
 class Serializer:
-    def __init__(self, buffer):
+    def __init__(self, buffer=bytearray()):
         self.frombuffer(buffer)
     def __VerifyEntrySize(self, size):
         assert(type(size) == int)
@@ -114,5 +114,7 @@ class Serializer:
         assert(type(buffer) == bytearray)
         self.buffer = bytearray(buffer)
         self.reset()
+    def tobuffer(self):
+        return memoryview(self.buffer[:self.position])
     def reset(self):
         self.position = 0

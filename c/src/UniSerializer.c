@@ -191,7 +191,7 @@ uint8_t Uni_decode_8(UniBuffer* ctx, bool* error)
 {
 	if (VerifyEntrySize(ctx, 1)) {
 		*error = true;
-		return NULL;
+		return 0;
 	}
 
 	uint8_t value = *(ctx->buffer + ctx->position) & 0xff;
@@ -202,7 +202,7 @@ uint16_t Uni_decode_16(UniBuffer* ctx, bool* error)
 {
 	if (VerifyEntrySize(ctx, 2)) {
 		*error = true;
-		return NULL;
+		return 0;
 	}
 
 	uint16_t value;
@@ -221,7 +221,7 @@ uint32_t Uni_decode_32(UniBuffer* ctx, bool* error)
 {
 	if (VerifyEntrySize(ctx, 4)) {
 		*error = true;
-		return NULL;
+		return 0;
 	}
 
 	uint32_t value;
@@ -244,7 +244,7 @@ uint64_t Uni_decode_64(UniBuffer* ctx, bool* error)
 {
 	if (VerifyEntrySize(ctx, 8)) {
 		*error = true;
-		return NULL;
+		return 0;
 	}
 
 	uint64_t value;
@@ -276,7 +276,7 @@ uint8_t* Uni_decode_Bytes(UniBuffer* ctx, size_t length, uint8_t* output, bool* 
 {
 	if (VerifyEntrySize(ctx, length)) {
 		*error = true;
-		return NULL;
+		return 0;
 	}
 	uint8_t* tmp;
 	if (output == NULL) {

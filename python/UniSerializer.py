@@ -4,7 +4,7 @@ class UniSerializer:
         self.frombuffer(buffer)
     def __VerifyEntrySize(self, size):
         assert(type(size) == int)
-        return (self.position + size) > len(self.buffer)
+        return len(self.buffer) < (self.position + size)
     def encode_8(self, value):
         assert(type(value) == int)
         assert(value < 0x100)
@@ -104,25 +104,23 @@ class UniSerializer:
         self.position += 8
     def encode_String(self, value):
         assert(type(value) == str)
-        length = len(value)
+        
+        length = len(value)+1
         val = list(map(ord, value))
-        if self.__VerifyEntrySize(length+1):
-            self.buffer.extend(val)
-            self.buffer.append(0)
-        else:
-            for i in range(length):
-                self.buffer[self.position+i] = val[i]
-            self.buffer[length + 1] = 0
-        self.position += length + 1
+        val.append(0)
+        if self.__VerifyEntrySize(length):
+            self.buffer.extend(list(range((self.position + length)-len(self.buffer))))
+        for i in range(length):
+            self.buffer[self.position+i] = val[i]
+        self.position += length
     def encode_Bytes(self, value):
-        assert(type(value) == bytearray or type(value) == list or type(value) == bytes)
-        val = list(value)
+        assert(type(value) == bytearray or type(value) == bytes)
+        val = memoryview(value)
         length = len(val)
         if self.__VerifyEntrySize(length):
-            self.buffer.extend(val)
-        else:
-            for i in range(length):
-                self.buffer[self.position+i] = val[i] & 0xff
+            self.buffer.extend(list(range((self.position + length)-len(self.buffer))))
+        for i in range(length):
+            self.buffer[self.position+i] = val[i] & 0xff
         self.position += length
     def encode_Bool(self, value):
         assert(type(value) == bool)
@@ -228,16 +226,15 @@ class UniSerializer:
     def decode_String(self):
         found = True
         length = 0
-        index = 0
+        found_position = 0
         for i in range(self.position, len(self.buffer)):
-            if self.buffer[index] == 0:
+            length += 1
+            if self.buffer[i] == 0:
                 found = False
-                length = index+1
                 break
-            index += 1
         if found:
             return None
-        value = ''.join(list(map(chr, self.buffer[self.position:length-1])))
+        value = ''.join(list(map(chr, self.buffer[self.position:self.position + length - 1])))
         self.position += length
         return value
     def decode_Bool(self):

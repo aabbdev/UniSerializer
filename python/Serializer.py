@@ -123,6 +123,7 @@ class Serializer:
         for i in range(length):
             self.buffer[self.position+i] = val[i] & 0xff
         self.position += length
+        return length
     def encode_Bool(self, value):
         assert(isinstance(value, bool))
         self.encode_8(int(bool(value)))

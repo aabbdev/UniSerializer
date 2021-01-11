@@ -135,7 +135,8 @@ class Deserializer:
                 or isinstance(entry, memoryview) or isinstance(entry, self)
                 or isinstance(entry, Serializer))
         if isinstance(entry, self):
-            self.buffer == entry.buffer
+            self.buffer = entry.buffer
+            self.position = entry.position
         elif isinstance(entry, Serializer):
             self.buffer = entry.tobuffer()
         else:

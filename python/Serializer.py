@@ -119,7 +119,8 @@ class Serializer:
                 or isinstance(entry, memoryview) or isinstance(entry, self) 
                 or isinstance(entry, Deserializer))
         if type(entry) == self or type(entry) == Deserializer:
-            self.buffer == bytearray(entry.buffer)
+            self.buffer = bytearray(entry.buffer)
+            self.position = entry.position
         else:
             self.buffer = bytearray(entry)
         self.reset()

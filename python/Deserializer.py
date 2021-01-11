@@ -4,6 +4,7 @@ from uniserializer import Serializer
 class Deserializer:
     def __init__(self, entry):
         self.buffer = None
+        self.position = 0
         self.frombuffer(entry)
     def __VerifyEntrySize(self, size):
         assert(isinstance(size, int))

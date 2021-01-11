@@ -139,8 +139,9 @@ class Deserializer:
             self.position = entry.position
         elif isinstance(entry, Serializer):
             self.buffer = entry.tobuffer()
+            self.reset()
         else:
             self.buffer = memoryview(entry)
-        self.reset()
+            self.reset()
     def reset(self):
         self.position = 0

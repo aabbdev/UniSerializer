@@ -1,10 +1,17 @@
 import sys, ctypes
+from math import ceil, log, pow
 from uniserializer import Deserializer
-
+nextPow2x2 = lambda x: int(pow(2, ceil(log(x, 2)))) * 2
 class Serializer:
-    def __init__(self, entry=bytearray()):
+    def __init__(self, entry=bytearray(), initialSize=32, autoResize=True):
+        self.autoResize = autoResize
+        self.position = 0
         self.buffer = None
-        self.frombuffer(entry)
+        if len(entry) == 0:
+            self.buffer = bytearray(range(initialSize))
+        else:
+            self.frombuffer(entry)
+            self.reset()
     def __VerifyEntrySize(self, size):
         assert(isinstance(size, int))
         return len(self.buffer) < (self.position + size)
@@ -14,7 +21,7 @@ class Serializer:
 
         val = value & 0xff
         if self.__VerifyEntrySize(1):
-            self.buffer += bytes(range((self.position + 1)-len(self.buffer)))
+            self.buffer += bytes(range(1) * 8)
         self.buffer[self.position] = val
         self.position += 1
     def encode_16(self, value):
@@ -29,6 +36,7 @@ class Serializer:
             val[1] = value & 0xff
             val[0] = (value >> 8) & 0xff
         if self.__VerifyEntrySize(2):
+            assert (self.autoResize)
             self.buffer += bytes(range((self.position + 2)-len(self.buffer)))
         self.buffer[self.position] = val[0]
         self.buffer[self.position + 1] = val[1]
@@ -49,6 +57,7 @@ class Serializer:
             val[1] = (value >> 16) & 0xFF
             val[0] = (value >> 24) & 0xFF
         if self.__VerifyEntrySize(4):
+            assert (self.autoResize)
             self.buffer += bytes(range((self.position + 4)-len(self.buffer)))
         self.buffer[self.position] = val[0]
         self.buffer[self.position + 1] = val[1]
@@ -80,6 +89,7 @@ class Serializer:
             val[0] = (value >> 56) & 0xFF
     
         if self.__VerifyEntrySize(8):
+            assert (self.autoResize)
             self.buffer += bytes(range((self.position + 8)-len(self.buffer)))
         self.buffer[self.position] = val[0]
         self.buffer[self.position + 1] = val[1]
@@ -97,6 +107,7 @@ class Serializer:
         val = list(map(ord, value))
         val.append(0)
         if self.__VerifyEntrySize(length):
+            assert (self.autoResize)
             self.buffer += bytes(range((self.position + length)-len(self.buffer)))
         for i in range(length):
             self.buffer[self.position+i] = val[i]
@@ -107,6 +118,7 @@ class Serializer:
         val = memoryview(value)
         length = len(val)
         if self.__VerifyEntrySize(length):
+            assert (self.autoResize)
             self.buffer += bytes(range((self.position + length)-len(self.buffer)))
         for i in range(length):
             self.buffer[self.position+i] = val[i] & 0xff
@@ -123,7 +135,6 @@ class Serializer:
             self.position = entry.position
         else:
             self.buffer = bytearray(entry)
-        self.reset()
     def tobuffer(self):
         return memoryview(self.buffer[:self.position])
     def reset(self):

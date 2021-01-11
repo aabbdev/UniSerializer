@@ -1,9 +1,12 @@
 import sys, ctypes
+from uniserializer import Serializer
+
 class Deserializer:
-    def __init__(self, buffer):
-        self.frombuffer(buffer)
+    def __init__(self, entry):
+        self.buffer = None
+        self.frombuffer(entry)
     def __VerifyEntrySize(self, size):
-        assert(type(size) == int)
+        assert(isinstance(size, int))
         return len(self.buffer) < (self.position + size)
     def decode_8(self):
         if self.__VerifyEntrySize(1):
@@ -106,7 +109,6 @@ class Deserializer:
     def decode_String(self):
         found = True
         length = 0
-        found_position = 0
         for i in range(self.position, len(self.buffer)):
             length += 1
             if self.buffer[i] == 0:
@@ -122,9 +124,22 @@ class Deserializer:
         if val == None:
             return None
         return ctypes.c_bool(val).value
-    def frombuffer(self, buffer):
-        assert(type(buffer) == bytearray or type(buffer) == bytes)
-        self.buffer = memoryview(buffer)
+    def decode_Bytes(self, length):
+        if self.__VerifyEntrySize(length):
+            return None
+        buffer = memoryview(self.buffer[self.position:self.position + length])
+        self.position += length
+        return buffer
+    def frombuffer(self, entry):
+        assert(isinstance(entry, bytearray) or isinstance(entry, bytes) 
+                or isinstance(entry, memoryview) or isinstance(entry, self)
+                or isinstance(entry, Serializer))
+        if isinstance(entry, self):
+            self.buffer == entry.buffer
+        elif isinstance(entry, Serializer):
+            self.buffer = entry.tobuffer()
+        else:
+            self.buffer = memoryview(entry)
         self.reset()
     def reset(self):
         self.position = 0

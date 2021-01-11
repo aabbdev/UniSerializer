@@ -1,12 +1,15 @@
 import sys, ctypes
+from uniserializer import Deserializer
+
 class Serializer:
-    def __init__(self, buffer=bytearray()):
-        self.frombuffer(buffer)
+    def __init__(self, entry=bytearray()):
+        self.buffer = None
+        self.frombuffer(entry)
     def __VerifyEntrySize(self, size):
-        assert(type(size) == int)
+        assert(isinstance(size, int))
         return len(self.buffer) < (self.position + size)
     def encode_8(self, value):
-        assert(type(value) == int)
+        assert(isinstance(value, int))
         assert(value < 0x100)
 
         val = value & 0xff
@@ -15,7 +18,7 @@ class Serializer:
         self.buffer[self.position] = val
         self.position += 1
     def encode_16(self, value):
-        assert(type(value) == int)
+        assert(isinstance(value, int))
         assert(value < 0x10000)
 
         val = [0,0]
@@ -31,7 +34,7 @@ class Serializer:
         self.buffer[self.position + 1] = val[1]
         self.position += 2
     def encode_32(self, value):
-        assert(type(value) == int)
+        assert(isinstance(value, int))
         assert(value < 0x100000000)
 
         val = [0,0,0,0]
@@ -53,7 +56,7 @@ class Serializer:
         self.buffer[self.position + 3] = val[3]
         self.position += 4
     def encode_64(self, value):
-        assert(type(value) == int)
+        assert(isinstance(value, int))
         assert(value < 0x10000000000000000)
 
         val = [0,0,0,0,0,0,0,0]
@@ -88,7 +91,7 @@ class Serializer:
         self.buffer[self.position + 7] = val[7]
         self.position += 8
     def encode_String(self, value):
-        assert(type(value) == str)
+        assert(isinstance(value, str))
         
         length = len(value)+1
         val = list(map(ord, value))
@@ -99,7 +102,8 @@ class Serializer:
             self.buffer[self.position+i] = val[i]
         self.position += length
     def encode_Bytes(self, value):
-        assert(type(value) == bytearray or type(value) == bytes)
+        assert(isinstance(value, bytearray) or isinstance(value, bytes) 
+                or isinstance(value, memoryview))
         val = memoryview(value)
         length = len(val)
         if self.__VerifyEntrySize(length):
@@ -108,11 +112,16 @@ class Serializer:
             self.buffer[self.position+i] = val[i] & 0xff
         self.position += length
     def encode_Bool(self, value):
-        assert(type(value) == bool)
+        assert(isinstance(value, bool))
         self.encode_8(int(bool(value)))
-    def frombuffer(self, buffer):
-        assert(type(buffer) == bytearray)
-        self.buffer = bytearray(buffer)
+    def frombuffer(self, entry):
+        assert(isinstance(entry, bytearray) or isinstance(entry, bytes)
+                or isinstance(entry, memoryview) or isinstance(entry, self) 
+                or isinstance(entry, Deserializer))
+        if type(entry) == self or type(entry) == Deserializer:
+            self.buffer == bytearray(entry.buffer)
+        else:
+            self.buffer = bytearray(entry)
         self.reset()
     def tobuffer(self):
         return memoryview(self.buffer[:self.position])

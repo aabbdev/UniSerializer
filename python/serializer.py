@@ -1,6 +1,6 @@
 import sys, ctypes
 from math import ceil, log, pow
-from uniserializer import Deserializer
+
 nextPow2x2 = lambda x: int(pow(2, ceil(log(x, 2)))) * 2
 class Serializer:
     def __init__(self, entry=bytearray(), initialSize=32, autoResize=True):
@@ -128,10 +128,12 @@ class Serializer:
         assert(isinstance(value, bool))
         self.encode_8(int(bool(value)))
     def frombuffer(self, entry):
-        assert(isinstance(entry, bytearray) or isinstance(entry, bytes)
-                or isinstance(entry, memoryview) or isinstance(entry, self) 
-                or isinstance(entry, Deserializer))
-        if type(entry) == self or type(entry) == Deserializer:
+        assert(isinstance(entry, bytearray)
+                or isinstance(entry, bytes)
+                or isinstance(entry, memoryview)
+                or isinstance(entry, type(self)))
+                #or isinstance(entry, Deserializer))
+        if isinstance(entry, type(self)): #or isinstance(entry, Deserializer):
             self.buffer = bytearray(entry.buffer)
             self.position = entry.position
         else:

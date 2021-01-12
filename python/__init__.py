@@ -1,2 +1,2 @@
-from .Deserializer import Deserializer
-from .Serializer import Serializer
+from .serializer import Serializer
+from .deserializer import Deserializer

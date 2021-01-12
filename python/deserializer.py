@@ -1,5 +1,4 @@
 import sys, ctypes
-from uniserializer import Serializer
 
 class Deserializer:
     def __init__(self, entry):
@@ -132,15 +131,17 @@ class Deserializer:
         self.position += length
         return buffer
     def frombuffer(self, entry):
-        assert(isinstance(entry, bytearray) or isinstance(entry, bytes) 
-                or isinstance(entry, memoryview) or isinstance(entry, self)
-                or isinstance(entry, Serializer))
-        if isinstance(entry, self):
+        assert(isinstance(entry, bytearray)
+                or isinstance(entry, bytes)
+                or isinstance(entry, memoryview)
+                or isinstance(entry, Deserializer))
+                #or isinstance(entry, Serializer))
+        if isinstance(entry, type(self)):
             self.buffer = entry.buffer
             self.position = entry.position
-        elif isinstance(entry, Serializer):
-            self.buffer = entry.tobuffer()
-            self.reset()
+        #elif isinstance(entry, Serializer):
+        #    self.buffer = entry.tobuffer()
+        #    self.reset()
         else:
             self.buffer = memoryview(entry)
             self.reset()

@@ -42,6 +42,27 @@ class Deserializer:
             value |= (self.buffer[self.position] << 24)
         self.position += 4
         return value
+    def decode_48(self):
+        if self.__VerifyEntrySize(6):
+            return None
+        value = None
+        if sys.byteorder == "big":
+            value = self.buffer[self.position]
+            value |= (self.buffer[self.position + 1] << 8)
+            value |= (self.buffer[self.position + 2] << 16)
+            value |= (self.buffer[self.position + 3] << 24)
+            value |= (self.buffer[self.position + 4] << 32)
+            value |= (self.buffer[self.position + 5] << 40)
+        else:
+            value = self.buffer[self.position + 5]
+            value |= (self.buffer[self.position + 4] << 8)
+            value |= (self.buffer[self.position + 3] << 16)
+            value |= (self.buffer[self.position + 2] << 24)
+            value |= (self.buffer[self.position + 1] << 32)
+            value |= (self.buffer[self.position] << 40)
+            
+        self.position += 6
+        return value
     def decode_64(self):
         if self.__VerifyEntrySize(8):
             return None

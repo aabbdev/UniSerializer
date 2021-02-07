@@ -1,7 +1,6 @@
 import sys, ctypes
 from math import ceil, log, pow
 
-nextPow2x2 = lambda x: int(pow(2, ceil(log(x, 2)))) * 2
 class Serializer:
     def __init__(self, entry=bytearray(), initialSize=32, autoResize=True):
         self.autoResize = autoResize
@@ -64,6 +63,35 @@ class Serializer:
         self.buffer[self.position + 2] = val[2]
         self.buffer[self.position + 3] = val[3]
         self.position += 4
+    def encode_48(self, value):
+        assert(isinstance(value, int))
+        assert(value < 0x1000000000000)
+
+        val = [0,0,0,0,0,0]
+        if sys.byteorder == "big":
+            val[0] = value & 0xff
+            val[1] = (value >> 8) & 0xFF
+            val[2] = (value >> 16) & 0xFF
+            val[3] = (value >> 24) & 0xFF
+            val[4] = (value >> 32) & 0xFF
+            val[5] = (value >> 40) & 0xFF
+        else:
+            val[5] = value & 0xff
+            val[4] = (value >> 8) & 0xFF
+            val[3] = (value >> 16) & 0xFF
+            val[2] = (value >> 24) & 0xFF
+            val[1] = (value >> 32) & 0xFF
+            val[0] = (value >> 40) & 0xFF
+        if self.__VerifyEntrySize(6):
+            assert (self.autoResize)
+            self.buffer += bytes(range((self.position + 6)-len(self.buffer)))
+        self.buffer[self.position] = val[0]
+        self.buffer[self.position + 1] = val[1]
+        self.buffer[self.position + 2] = val[2]
+        self.buffer[self.position + 3] = val[3]
+        self.buffer[self.position + 4] = val[4]
+        self.buffer[self.position + 5] = val[5]
+        self.position += 6
     def encode_64(self, value):
         assert(isinstance(value, int))
         assert(value < 0x10000000000000000)

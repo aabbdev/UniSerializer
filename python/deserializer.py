@@ -1,10 +1,18 @@
 import sys, ctypes
 
+# Types
+UNI_BIG = 1
+UNI_LITTLE = 0
+
+
+
 class Deserializer:
-    def __init__(self, entry):
+    def __init__(self, entry, defaultEndianness=UNI_BIG):
+        self.endianness = defaultEndianness
         self.buffer = None
         self.position = 0
         self.frombuffer(entry)
+
     def __VerifyEntrySize(self, size):
         assert(isinstance(size, int))
         return len(self.buffer) < (self.position + size)
@@ -18,7 +26,7 @@ class Deserializer:
         if self.__VerifyEntrySize(2):
             return None
         value = None
-        if sys.byteorder == "big":
+        if (self.endianness == 0 and sys.byteorder == "little") or sys.byteorder == "big":
             value = self.buffer[self.position]
             value |= self.buffer[self.position + 1] << 8
         else:
@@ -30,7 +38,8 @@ class Deserializer:
         if self.__VerifyEntrySize(4):
             return None
         value = None
-        if sys.byteorder == "big":
+        print(bytes(self.buffer[self.position:self.position+4]))
+        if (self.endianness == 0 and sys.byteorder == "little") or sys.byteorder == "big":
             value = self.buffer[self.position]
             value |= (self.buffer[self.position + 1] << 8)
             value |= (self.buffer[self.position + 2] << 16)
@@ -46,7 +55,7 @@ class Deserializer:
         if self.__VerifyEntrySize(8):
             return None
         value = None
-        if sys.byteorder == "big":
+        if (self.endianness == 0 and sys.byteorder == "little") or sys.byteorder == "big":
             value = self.buffer[self.position]
             value |= (self.buffer[self.position + 1] << 8)
             value |= (self.buffer[self.position + 2] << 16)

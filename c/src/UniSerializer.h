@@ -13,6 +13,8 @@ typedef struct _UniBuffer {
 	uint32_t position;
 	size_t length;
 	bool autoResize;
+	bool desiredBigEndian;
+	bool systemBigEndian;
 } UniBuffer;
 typedef struct _UniCallbacks
 {
@@ -21,9 +23,9 @@ typedef struct _UniCallbacks
 	void (* free) (void* memory);
 } UniCallbacks;
 
-UniBuffer Uni_init(size_t InitialSize, bool autoResize);
-UniBuffer Uni_init_with_callbacks(size_t InitialSize, bool autoResize, const UniCallbacks* inits);
-UniBuffer Uni_from(uint8_t* buffer, uint8_t Size);
+UniBuffer Uni_init(size_t InitialSize, bool autoResize, bool isBig);
+UniBuffer Uni_init_with_callbacks(size_t InitialSize, bool autoResize, bool isBig, const UniCallbacks* inits);
+UniBuffer Uni_from(uint8_t* buffer, uint8_t Size, bool isBig);
 
 
 // ** ################### ENCODER ###################

@@ -9,15 +9,18 @@ inline int is_big_endian(void)
 
 	return e.c[0];
 }
-UniBuffer Uni_init(size_t InitialSize, bool autoResize) {
+UniBuffer Uni_init(size_t InitialSize, bool autoResize, bool isBigEndian) {
 	UniBuffer ctx;
 	ctx.autoResize = autoResize;
 	ctx.position = 0;
 	ctx.length = InitialSize;
 	ctx.buffer = (uint8_t*)callbacks.malloc(InitialSize * sizeof(uint8_t));
+	// to be reworked
+	ctx.systemBigEndian = is_big_endian();
+	ctx.desiredBigEndian = (isBigEndian == false && ctx.systemBigEndian == false) || ctx.systemBigEndian;
 	return ctx;
 }
-UniBuffer Uni_init_with_callbacks(size_t InitialSize, bool autoResize, const UniCallbacks* inits)
+UniBuffer Uni_init_with_callbacks(size_t InitialSize, bool autoResize, bool isBigEndian, const UniCallbacks* inits)
 {
 	if (inits->malloc != NULL && inits->free != NULL)
 	{
@@ -31,14 +34,16 @@ UniBuffer Uni_init_with_callbacks(size_t InitialSize, bool autoResize, const Uni
 			callbacks.realloc = inits->realloc;
 		}
 	}
-	return Uni_init(InitialSize, autoResize);
+	return Uni_init(InitialSize, autoResize, isBigEndian);
 }
-UniBuffer Uni_from(uint8_t* buffer, uint8_t Size) {
+UniBuffer Uni_from(uint8_t* buffer, uint8_t Size, bool isBigEndian) {
 	UniBuffer ctx;
 	ctx.autoResize = false;
 	ctx.position = 0;
 	ctx.length = Size;
 	ctx.buffer = buffer;
+	ctx.desiredBigEndian = isBigEndian;
+	ctx.systemBigEndian = is_big_endian();
 	return ctx;
 }
 bool ResizeIfNeed(UniBuffer* ctx, size_t Size) {
@@ -46,6 +51,7 @@ bool ResizeIfNeed(UniBuffer* ctx, size_t Size) {
 	if (newSize > ctx->length) {
 		if (ctx->autoResize) {
 			size_t len = ctx->length;
+			// TODO: To be replaced with faster, next power of 2 (log)
 			while (newSize>len) {
 				len *= 2;
 			}
@@ -206,7 +212,7 @@ uint16_t Uni_decode_16(UniBuffer* ctx, bool* error)
 	}
 
 	uint16_t value;
-	if (is_big_endian()) {
+	if (ctx->desiredBigEndian) {
 		value = *(ctx->buffer + ctx->position) & 0xff;
 		value |= (((uint16_t)(*(ctx->buffer + ctx->position + 1))) << 8) & 0xff;
 	}
@@ -225,7 +231,7 @@ uint32_t Uni_decode_32(UniBuffer* ctx, bool* error)
 	}
 
 	uint32_t value;
-	if (is_big_endian()) {
+	if (ctx->desiredBigEndian) {
 		value = *(ctx->buffer + ctx->position) & 0xff;
 		value |= (((uint32_t)(*(ctx->buffer + ctx->position + 1))) << 8) & 0xff;
 		value |= (((uint32_t)(*(ctx->buffer + ctx->position + 2))) << 16) & 0xff;
@@ -248,7 +254,7 @@ uint64_t Uni_decode_64(UniBuffer* ctx, bool* error)
 	}
 
 	uint64_t value;
-	if (is_big_endian()) {
+	if (ctx->desiredBigEndian) {
 		value = *(ctx->buffer + ctx->position) & 0xff;
 		value |= (((uint64_t)(*(ctx->buffer + ctx->position + 1))) << 8) & 0xff;
 		value |= (((uint64_t)(*(ctx->buffer + ctx->position + 2))) << 16) & 0xff;

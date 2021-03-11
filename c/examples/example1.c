@@ -1,4 +1,5 @@
 #include <stdio.h>
+#define UNISERIALIZER_IMPLEMENTATION
 #include <UniSerializer.h>
 
 int main()
